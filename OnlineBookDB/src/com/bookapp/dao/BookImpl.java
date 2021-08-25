@@ -46,14 +46,16 @@ public class BookImpl implements BookInter {
 	}
 
 	@Override
-	public boolean deleteBook(int bookid) {
+	public boolean deleteBook(int bookid) throws BookNotFoundException {
 		// TODO Auto-generated method stub
+		boolean val = false;
 		try {
 			String delsql = "delete from Book where bookid=?";
 			connection = ModelDAO.openConnection();
 			st = connection.prepareStatement(delsql, ResultSet.CONCUR_UPDATABLE, ResultSet.TYPE_SCROLL_INSENSITIVE);
 			st.setInt(1, bookid);
-			st.execute();
+			val = st.execute();
+
 		} catch (SQLException e) {
 
 			e.printStackTrace();
@@ -68,7 +70,10 @@ public class BookImpl implements BookInter {
 			}
 			ModelDAO.closeConnection();
 		}
-		return false;
+		if (val == true) {
+			throw new BookNotFoundException("Invalid Book id");
+		}
+		return val;
 	}
 
 	@Override
@@ -88,6 +93,7 @@ public class BookImpl implements BookInter {
 				book.setCategory(rs.getString(3));
 				book.setBookid(rs.getInt(4));
 				book.setPrice(rs.getInt(5));
+
 				// BookbyId.add(book);
 
 			}
@@ -104,6 +110,10 @@ public class BookImpl implements BookInter {
 				e.printStackTrace();
 			}
 			ModelDAO.closeConnection();
+		}
+		if (book == null) 
+		{
+			throw new BookNotFoundException("Invalid Book Id");
 		}
 		return book;
 	}

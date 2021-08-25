@@ -45,20 +45,17 @@ public class Client {
 				int id = sc.nextInt();
 				System.out.println(obj.getBookById(id));
 			} catch (BookNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println(e1.getMessage());
 			}
 			break;
 		case 3:
 			try {
 				System.out.println("Enter the Book Id to Delete");
 				int id1 = sc.nextInt();
-				boolean val = obj.deleteBook(id1);
-				if (val == false)
-					System.out.println("Deleted..");
+				System.out.println(obj.deleteBook(id1));
+				
 			} catch (BookNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 			break;
 		case 4:
@@ -68,8 +65,7 @@ public class Client {
 			try {
 				obj.updateBook(id2, price1);
 			} catch (BookNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 			break;
 		case 5:
@@ -83,7 +79,7 @@ public class Client {
 				System.out.println(obj.getBookbyAuthor(author1));
 			} catch (AuthorNotFoundException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 			break;
 
@@ -93,8 +89,7 @@ public class Client {
 			try {
 				System.out.println(obj.getBookbycategory(category1));
 			} catch (CategoryNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 		}
 
