@@ -9,15 +9,19 @@ import com.bookapp.exception.CategoryNotFoundException;
 
 public interface BookInter {
 	void addBook(Book book);
-    //called by admin
+
+	// called by admin
 	boolean deleteBook(int bookid) throws BookNotFoundException;
-    Book getBookById(int bookid)throws BookNotFoundException;
+
+	Book getBookById(int bookid) throws BookNotFoundException;
+
 	int updateBook(int bookId, int price) throws BookNotFoundException;
 
-	//called by customer
-	List<Book> getAllBooks();
-	List<Book> getBookbyAuthor(String author)  throws AuthorNotFoundException;
+	// called by customer
+	List<Book> getAllBooks() ;
 
-	List<Book> getBookbycategory(String category)  throws CategoryNotFoundException;
+	List<Book> getBookbyAuthor(String author) throws AuthorNotFoundException;
+
+	List<Book> getBookbycategory(String category) throws CategoryNotFoundException;
 
 }
