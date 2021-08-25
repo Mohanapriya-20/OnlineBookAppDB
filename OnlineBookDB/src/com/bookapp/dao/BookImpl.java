@@ -1,4 +1,5 @@
 package com.bookapp.dao;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import com.bookapp.bean.Book;
 import com.bookapp.exception.BookNotFoundException;
+import com.mysql.cj.protocol.Resultset;
 
 public class BookImpl implements BookInter {
 	Connection connection = null;
@@ -18,7 +20,7 @@ public class BookImpl implements BookInter {
 		try {
 			String sql = "insert into Book values(?,?,?,?,?)";
 			connection = ModelDAO.openConnection();
-			st = connection.prepareStatement(sql);
+			st = connection.prepareStatement(sql,ResultSet.CONCUR_UPDATABLE,ResultSet.TYPE_SCROLL_INSENSITIVE);
 			st.setString(1, book.getTitle());
 			st.setString(2, book.getAuthor());
 			st.setString(3, book.getCategory());
@@ -37,7 +39,7 @@ public class BookImpl implements BookInter {
 		try {
 			String delsql = "delete from Book where bookid=?";
 			connection = ModelDAO.openConnection();
-			st = connection.prepareStatement(delsql);
+			st = connection.prepareStatement(delsql, ResultSet.CONCUR_UPDATABLE,ResultSet.TYPE_SCROLL_INSENSITIVE);
 			st.setInt(1, bookid);
 			st.execute();
 		} catch (SQLException e) {
@@ -48,12 +50,39 @@ public class BookImpl implements BookInter {
 	}
 
 	@Override
+	public Book getBookById(int bookid) throws BookNotFoundException {
+		// List<Book> BookbyId=new ArrayList<>();
+		Book book = new Book();
+		try {
+			String idsql = "Select * from Book where bookid=?";
+			connection = ModelDAO.openConnection();
+			st = connection.prepareStatement(idsql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			st.setInt(1, bookid);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+
+				book.setTitle(rs.getString(1));
+				book.setAuthor(rs.getString(2));
+				book.setCategory(rs.getString(3));
+				book.setBookid(rs.getInt(4));
+				book.setPrice(rs.getInt(5));
+				// BookbyId.add(book);
+
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return book;
+	}
+
+	@Override
 	public int updateBook(int bookId, int price) throws BookNotFoundException {
 		int rs = 0;
 		try {
 			String updsql = "update Book set price=? where bookId=?";
 			connection = ModelDAO.openConnection();
-			st = connection.prepareStatement(updsql);
+			st = connection.prepareStatement(updsql, ResultSet.CONCUR_UPDATABLE, ResultSet.TYPE_SCROLL_INSENSITIVE);
 			st.setInt(1, price);
 			st.setInt(2, bookId);
 			rs = st.executeUpdate();
@@ -64,9 +93,9 @@ public class BookImpl implements BookInter {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally {
+		} finally {
 			try {
-				
+
 				if (st != null) {
 					st.close();
 				}
@@ -88,7 +117,7 @@ public class BookImpl implements BookInter {
 
 			String selsql = "select * from Book";
 			connection = ModelDAO.openConnection();
-			st = connection.prepareStatement(selsql);
+			st = connection.prepareStatement(selsql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				Book book = new Book();
@@ -105,7 +134,7 @@ public class BookImpl implements BookInter {
 			e.printStackTrace();
 		} finally {
 			try {
-				
+
 				if (st != null) {
 					st.close();
 				}
@@ -124,7 +153,7 @@ public class BookImpl implements BookInter {
 		try {
 			String selsql1 = "select * from Book where author=?";
 			connection = ModelDAO.openConnection();
-			st = connection.prepareStatement(selsql1);
+			st = connection.prepareStatement(selsql1, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			st.setString(1, author);
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
@@ -153,7 +182,7 @@ public class BookImpl implements BookInter {
 		try {
 			String selsql1 = "select * from Book where category=?";
 			connection = ModelDAO.openConnection();
-			st = connection.prepareStatement(selsql1);
+			st = connection.prepareStatement(selsql1, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			st.setString(1, category);
 			ResultSet rs = st.executeQuery();
 
@@ -173,4 +202,5 @@ public class BookImpl implements BookInter {
 
 		return getBooksbyCategory;
 	}
+
 }
